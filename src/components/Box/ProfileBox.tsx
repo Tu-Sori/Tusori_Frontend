@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import styled from "styled-components";
 import NumberBtn from "components/Dictionary/NumberBtn";
 import { useMyPageData } from "api/mypage/mypageDataContext";
@@ -7,6 +7,14 @@ import { useWords } from "components/SideBar/DictionarySideBar/WordsContext";
 const ProfileBox: React.FC = () => {
   const { user_info } = useMyPageData();
   const { isOpen } = useWords();
+
+  //초기화 버튼 클릭시
+  const handleReset = () => {
+    if (window.confirm("투설이 주식 거래 기록이 초기화됩니다. 정말 초기화하시겠습니까?")) {
+      alert("초기화되었습니다.");
+      window.location.href = "/mypage";
+    }
+  };
 
   return (
     <UserInfoContainer>
@@ -20,7 +28,7 @@ const ProfileBox: React.FC = () => {
         <MyAssetContainer>
           <RowContainer style={{ justifyContent: " space-between" }}>
             <AssetText style={{ paddingTop: "29px", fontFamily: "Pretendard-Medium" }}>내 자산 정보</AssetText>
-            <ResetBtn>초기화</ResetBtn>
+            <ResetBtn onClick={handleReset}>초기화</ResetBtn>
           </RowContainer>
           <Line />
 
