@@ -4,7 +4,9 @@ import { useWords } from "components/SideBar/DictionarySideBar/WordsContext";
 import NumberBtn from "components/Dictionary/NumberBtn";
 import rise from "../../assets/rising_arrow.svg";
 import graph from "../../assets/CandleGraph.png";
+import { useLocation } from "react-router-dom";
 import { useMyPageData } from "api/mypage/mypageDataContext";
+import { addInterestedStock, deleteInterestedStock } from "api/industry/InterestedStock";
 
 interface CompanyInfo {
   Code: string;
@@ -155,6 +157,7 @@ const StockPriceBox: React.FC<{ data: CompanyInfo }> = ({ data }) => {
   const [isFavorite, setIsFavorite] = useState<boolean>(false);
   const { interest_stocks } = useMyPageData();
   const { isOpen } = useWords();
+  const location = useLocation();
 
   useEffect(() => {
     if (interest_stocks) {
@@ -162,6 +165,18 @@ const StockPriceBox: React.FC<{ data: CompanyInfo }> = ({ data }) => {
       setIsFavorite(isFavorite);
     }
   }, [interest_stocks, stockName]);
+
+  const toggleFavorite = () => {
+    if (isFavorite) {
+      deleteInterestedStock(location.state?.sector, data?.Code);
+      console.log("즐겨찾기 해제");
+      setIsFavorite(!isFavorite);
+    } else {
+      addInterestedStock(location.state?.sector, data?.Code);
+      console.log("즐겨찾기 추가");
+      setIsFavorite(isFavorite);
+    }
+  };
 
   return (
     <BoxContainer>
@@ -190,7 +205,7 @@ const StockPriceBox: React.FC<{ data: CompanyInfo }> = ({ data }) => {
           </ChangeInfo>
         </PriceInfo>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", marginRight: "1.25vw" }}>
-          <img src={isFavorite ? "/assets/Industry/filledStar.svg" : "/assets/Industry/emptyStar.svg"} style={{ cursor: "pointer" }} />
+          <img src={isFavorite ? "/assets/Industry/filledStar.svg" : "/assets/Industry/emptyStar.svg"} style={{ cursor: "pointer" }} onClick={toggleFavorite} />
           <div style={{ display: "flex", flexDirection: "column" }}>
             <DetailPriceInfo>
               {isOpen ? <NumberBtn number={8} /> : null}
