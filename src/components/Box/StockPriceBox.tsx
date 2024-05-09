@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useWords } from "components/SideBar/DictionarySideBar/WordsContext";
 import NumberBtn from "components/Dictionary/NumberBtn";
 import rise from "../../assets/rising_arrow.svg";
 import graph from "../../assets/CandleGraph.png";
+import { useMyPageData } from "api/mypage/mypageDataContext";
 
 interface CompanyInfo {
   Code: string;
@@ -152,12 +153,15 @@ const Star = styled.img`
 const StockPriceBox: React.FC<{ data: CompanyInfo }> = ({ data }) => {
   const stockName = decodeURIComponent(window.location.href.split("/")[4]);
   const [isFavorite, setIsFavorite] = useState<boolean>(false);
+  const { interest_stocks } = useMyPageData();
   const { isOpen } = useWords();
 
-  // 즐겨찾기 기능(별 부분)
-  const toggleFavorite = () => {
-    setIsFavorite(!isFavorite);
-  };
+  useEffect(() => {
+    if (interest_stocks) {
+      const isFavorite = interest_stocks.some((stock) => stock.Name === stockName);
+      setIsFavorite(isFavorite);
+    }
+  }, [interest_stocks, stockName]);
 
   return (
     <BoxContainer>
@@ -165,7 +169,8 @@ const StockPriceBox: React.FC<{ data: CompanyInfo }> = ({ data }) => {
         <PriceInfo>
           <KOSPI>
             {isOpen ? <NumberBtn number={1} /> : null}
-            {data?.Code} {isOpen ? <NumberBtn number={2} /> : null}코스피
+            {data?.Code} {isOpen ? <NumberBtn number={2} /> : null}
+            {data?.Market}
           </KOSPI>
           <Title>{data?.Name}</Title>
           <CurrentPrice>
@@ -185,7 +190,7 @@ const StockPriceBox: React.FC<{ data: CompanyInfo }> = ({ data }) => {
           </ChangeInfo>
         </PriceInfo>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", marginRight: "1.25vw" }}>
-          <img src={isFavorite ? "/assets/Industry/filledStar.svg" : "/assets/Industry/emptyStar.svg"} style={{ cursor: "pointer" }} onClick={toggleFavorite} />
+          <img src={isFavorite ? "/assets/Industry/filledStar.svg" : "/assets/Industry/emptyStar.svg"} style={{ cursor: "pointer" }} />
           <div style={{ display: "flex", flexDirection: "column" }}>
             <DetailPriceInfo>
               {isOpen ? <NumberBtn number={8} /> : null}
